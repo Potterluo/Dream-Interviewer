@@ -1,0 +1,25 @@
+:root {
+  --brand-1: #30b30c;
+  --brand-2: #59c23c;
+  --brand-3: #c1e8b6;
+  --marked-color: #111;
+  --btn-primary-color: #111;
+}
+.ChatApp,
+.MessageContainer,
+.Navbar,
+.Message .Bubble,
+.QuickReplies,
+.ChatFooter {
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.ChatApp {
+  background-color: rgba(0, 0, 0, 0);
+}
+.ChatFooter {
+  background-color: rgba(0, 0, 0, 0);
+}
+.Message.right .Bubble {
+  color: #111;
+}
