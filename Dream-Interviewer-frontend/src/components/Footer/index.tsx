@@ -1,4 +1,4 @@
-import { GithubOutlined } from '@ant-design/icons';
+import {GithubOutlined, RobotOutlined} from '@ant-design/icons';
 import { DefaultFooter } from '@ant-design/pro-components';
 import '@umijs/max';
 import React from 'react';
@@ -15,7 +15,11 @@ const Footer: React.FC = () => {
       links={[
         {
           key: 'codeNav',
-          title: '个人博客',
+          title: (
+            <>
+              <RobotOutlined /> 个人博客
+            </>
+          ),
           href: 'http://keriko.fun/',
           blankTarget: true,
         },
@@ -23,7 +27,7 @@ const Footer: React.FC = () => {
           key: 'github',
           title: (
             <>
-              <GithubOutlined /> 项目源码
+              <GithubOutlined />项目源码
             </>
           ),
           href: 'https://github.com/Potterluo/Dream-Interviewer',

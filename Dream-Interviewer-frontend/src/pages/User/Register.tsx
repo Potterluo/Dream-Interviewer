@@ -2,7 +2,7 @@ import {LockOutlined, UserOutlined,} from '@ant-design/icons';
 import {message, Tabs} from 'antd';
 import React, {useState} from 'react';
 import {history} from 'umi';
-import {PLANET_LINK, SYSTEM_LOGO} from '@/constants';
+import { SYSTEM_LOGO} from '@/constants';
 import Footer from '@/components/Footer';
 import {userRegister} from '@/services/backend/userController';
 import {LoginForm, ProFormText} from '@ant-design/pro-form';
@@ -47,7 +47,7 @@ const Register: React.FC = () => {
         return;
       }
     } catch (error: any) {
-      const defaultLoginFailureMessage = '注册失败，请重试！';
+      const defaultLoginFailureMessage = '注册失败或用户名已存在';
       message.error(defaultLoginFailureMessage);
     }
   };

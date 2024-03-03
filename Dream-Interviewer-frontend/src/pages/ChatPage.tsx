@@ -4,7 +4,7 @@ import '@chatui/core/es/styles/index.less';
 import Chat, { Bubble, useMessages } from '@chatui/core';
 // 引入样式
 import '../../../../init/yupi-antd-frontend-init-master/src/pages/chatui-theme.css';
-import {Button, Spin} from 'antd';
+import {Button} from 'antd';
 
 import {Link, useModel} from "@@/exports";
 import { FloatButton } from 'antd';
@@ -89,7 +89,7 @@ const ChatPage: React.FC = () => {
 
   return (
     <div style={divStyle}>
-      <FloatButton onClick={() => console.log('onClick')} />;
+      <FloatButton onClick={() => console.log('onClick')} />
       <Chat
        /* navbar={{ title: '智能助理' }}*/
         messages={messages}

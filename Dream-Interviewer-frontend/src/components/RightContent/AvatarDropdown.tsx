@@ -64,7 +64,7 @@ export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
   }
 
   const menuItems = [
-    ...(menu
+/*    ...(menu
       ? [
           {
             key: 'center',
@@ -80,7 +80,12 @@ export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
             type: 'divider' as const,
           },
         ]
-      : []),
+      : []),*/
+    {
+      key: 'settings',
+      icon: <SettingOutlined />,
+      label: '个人设置',
+    },
     {
       key: 'logout',
       icon: <LogoutOutlined />,
