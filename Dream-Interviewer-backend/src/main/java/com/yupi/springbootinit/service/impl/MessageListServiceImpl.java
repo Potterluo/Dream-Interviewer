@@ -31,7 +31,7 @@ public class MessageListServiceImpl extends ServiceImpl<MessageListMapper, Messa
         return 0;
     }*/
     @Override
-    public int AddMessageList(String userAccount){
+    public int addMessageList(String userAccount){
         MessageList messageList = new MessageList();
         messageList.setUserAccount(userAccount);
         messageList.setCreateTime(new java.util.Date());
@@ -44,7 +44,7 @@ public class MessageListServiceImpl extends ServiceImpl<MessageListMapper, Messa
     }
 
     @Override
-    public boolean DeleteMessageList(int listId){
+    public boolean deleteMessageList(Integer listId){
         boolean removeResult = this.removeById(listId);
         if (!removeResult) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "删除会话失败");
@@ -53,17 +53,18 @@ public class MessageListServiceImpl extends ServiceImpl<MessageListMapper, Messa
     }
 
     @Override
-    public String Mainmessage(MessageList messageList){
+    public String mainMessage(Integer listId){
+        MessageList messageList = this.getById(listId);
         String mainContent = messageList.getMainContent();
-        if(!mainContent.equals("")){
+/*        if(!mainContent.equals("")){
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "为获取到主要内容");
-        }
+        }*/
         return mainContent;
     }
 
     @Override
     public List<MessageList> listMessageList(String userAccount){
-        return this.list(new QueryWrapper<MessageList>().eq("user_account", userAccount));
+        return this.list(new QueryWrapper<MessageList>().eq("userAccount", userAccount));
     }
 
 

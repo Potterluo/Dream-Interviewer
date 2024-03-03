@@ -13,10 +13,10 @@ import java.util.List;
 */
 public interface MessageListService extends IService<MessageList> {
     /*int AddMessageList(String userAccount);*/
-    int AddMessageList(String userAccount);
-    boolean DeleteMessageList(int listId);
+    int addMessageList(String userAccount);
+    boolean deleteMessageList(Integer listId);
 
-    String Mainmessage(MessageList messageList);
+    String mainMessage(Integer ListId);
 
     List<MessageList> listMessageList(String userAccount);
 
