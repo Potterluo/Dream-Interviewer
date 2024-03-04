@@ -1,40 +1,46 @@
 package com.yupi.springbootinit.controller;
 
-import com.yupi.springbootinit.model.dto.moonshotai.PostSendMessages;
+import com.yupi.springbootinit.model.dto.moonshotai.PostMessages;
 import com.yupi.springbootinit.model.dto.moonshotai.PostSendRequest;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/chat")
-public class ChatController {
-
+@RequestMapping("/moonshot")
+public class MoonshotController {
+    // Moonshot AI API的基础URL
     private static final String API_BASE_URL = "https://api.moonshot.cn/v1";
-    private static final String API_KEY = ""; // 请替换为你的实际API密钥
+    // API密钥，请替换为实际密钥
+    private static final String API_KEY = "sk-UqKpQQ4cw6wR1oDpfyy5ZBzUyV1BSQD6VKlVVElULpXSFFo7";
 
+    /**
+     * 与Moonshot AI API进行对话。
+     *
+     * @param userMessage 用户输入的消息
+     * @return 从API获取的响应消息
+     */
     @GetMapping("/test")
     public ResponseEntity<String> chat(@RequestParam String userMessage) {
         // 创建请求体
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("model", "moonshot-v1-8k");
-        /*requestBody.put("messages", List.of(
-                new HashMap<String, String>() {{
-                    put("role", "system");
-                    put("content", "你是 Kimi，由 Moonshot AI 提供的人工智能助手，你更擅长中文和英文的对话。");
-                }},
-                new HashMap<String, String>() {{
-                    put("role", "user");
-                    put("content", userMessage);
-                }}
-        ));*/
+        //requestBody.put("messages", List.of(          //List.of()方法不能使用了
+        //        new HashMap<String, String>() {{
+        //            put("role", "system");
+        //            put("content", "你是 Kimi，由 Moonshot AI 提供的人工智能助手，你更擅长中文和英文的对话。");
+        //        }},
+        //        new HashMap<String, String>() {{
+        //            put("role", "user");
+        //            put("content", userMessage);
+        //        }}
+        //));
         requestBody.put("temperature", 0.3);
 
         // 使用RestTemplate发送请求
@@ -60,15 +66,21 @@ public class ChatController {
         }
     }
 
+    /**
+     * 组装消息并与Moonshot AI API进行对话。
+     *
+     * @param sendMessage 用户请求发送的消息体
+     * @return 从API获取的响应消息
+     */
     @GetMapping("/test2")
     public ResponseEntity<String> chat2(PostSendRequest sendMessage) {
         PostSendRequest realMessage = new PostSendRequest();
         realMessage.setModel("moonshot-v1-8k");
         realMessage.setTemperature(0.3);
-        PostSendMessages message1  = new PostSendMessages();
-        PostSendMessages message2  = new PostSendMessages();
-        PostSendMessages message3  = new PostSendMessages();
-        PostSendMessages message4  = new PostSendMessages();
+        PostMessages message1  = new PostMessages();
+        PostMessages message2  = new PostMessages();
+        PostMessages message3  = new PostMessages();
+        PostMessages message4  = new PostMessages();
         message1.setRole("system");
         message1.setContent("你是 Kimi，由 Moonshot AI 提供的人工智能助手，你更擅长中文和英文的对话。");
         message2.setRole("user");
@@ -77,8 +89,8 @@ public class ChatController {
         message3.setContent("你好，李雷！1+1等于2");
         message4.setRole("user");
         message4.setContent("你好，我的上一个问题是什么？");
-        //List<PostSendMessages> messages = List.of(message1, message2, message3, message4);//Java 9的新特性
-        List<PostSendMessages> messages = new ArrayList<>();
+        // 使用List集合存储消息，兼容旧版Java
+        List<PostMessages> messages = new ArrayList<>();
         messages.add(message1);
         messages.add(message2);
         messages.add(message3);
@@ -89,7 +101,7 @@ public class ChatController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "Bearer " + API_KEY);
-        HttpEntity<Object> entity = new HttpEntity<>(realMessage, headers);
+        HttpEntity<Object> entity = new HttpEntity<>(sendMessage, headers);
         System.out.println(realMessage.toString());
         System.out.println(realMessage.getModel());
         try {
@@ -106,6 +118,5 @@ public class ChatController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error: " + e.getMessage());
         }
-        //
     }
 }

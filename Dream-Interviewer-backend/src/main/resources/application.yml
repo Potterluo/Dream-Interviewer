@@ -58,6 +58,9 @@ server:
 file:
   upload:
     path: E:\TestUpload
+myapp:
+  API_KEY: afdasfwsadfreawgf
+  API_BASE_URL: http://localhost:8101
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: false

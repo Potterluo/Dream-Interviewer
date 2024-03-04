@@ -2,13 +2,13 @@
 /* eslint-disable */
 import { request } from '@umijs/max';
 
-/** 此处后端没有提供注释 GET / */
-export async function check(
+/** check GET /api/ */
+export async function checkUsingGet(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.checkParams,
+  params: API.checkUsingGETParams,
   options?: { [key: string]: any },
 ) {
-  return request<string>('/', {
+  return request<string>('/api/', {
     method: 'GET',
     params: {
       ...params,
@@ -17,17 +17,17 @@ export async function check(
   });
 }
 
-/** 此处后端没有提供注释 POST / */
-export async function receiveMessage(options?: { [key: string]: any }) {
-  return request<any>('/', {
+/** receiveMessage POST /api/ */
+export async function receiveMessageUsingPost(options?: { [key: string]: any }) {
+  return request<any>('/api/', {
     method: 'POST',
     ...(options || {}),
   });
 }
 
-/** 此处后端没有提供注释 GET /setMenu */
-export async function setMenu(options?: { [key: string]: any }) {
-  return request<string>('/setMenu', {
+/** setMenu GET /api/setMenu */
+export async function setMenuUsingGet(options?: { [key: string]: any }) {
+  return request<string>('/api/setMenu', {
     method: 'GET',
     ...(options || {}),
   });

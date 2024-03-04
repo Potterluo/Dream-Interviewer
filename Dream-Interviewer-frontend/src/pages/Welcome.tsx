@@ -1,6 +1,4 @@
-import { PageContainer } from '@ant-design/pro-components';
-import { useModel } from '@umijs/max';
-import {Button, Card, ConfigProvider, theme} from 'antd';
+import {Button} from 'antd';
 import React from 'react';
 import {Helmet, Link} from "@@/exports";
 import { Col, Row } from 'antd';
@@ -37,6 +35,7 @@ const Welcome: React.FC = () => {
     lineHeight:'normal'
     // 更多样式属性...
   };
+
   return (
     <div
     style={{

@@ -2,9 +2,9 @@
 /* eslint-disable */
 import { request } from '@umijs/max';
 
-/** 此处后端没有提供注释 POST /post/add */
-export async function addPost(body: API.PostAddRequest, options?: { [key: string]: any }) {
-  return request<API.BaseResponseLong>('/post/add', {
+/** addPost POST /api/post/add */
+export async function addPostUsingPost(body: API.PostAddRequest, options?: { [key: string]: any }) {
+  return request<API.BaseResponseLong_>('/api/post/add', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -14,37 +14,43 @@ export async function addPost(body: API.PostAddRequest, options?: { [key: string
   });
 }
 
-/** 此处后端没有提供注释 POST /post/delete */
-export async function deletePost(body: API.DeleteRequest, options?: { [key: string]: any }) {
-  return request<API.BaseResponseBoolean>('/post/delete', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: body,
-    ...(options || {}),
-  });
-}
-
-/** 此处后端没有提供注释 POST /post/edit */
-export async function editPost(body: API.PostEditRequest, options?: { [key: string]: any }) {
-  return request<API.BaseResponseBoolean>('/post/edit', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: body,
-    ...(options || {}),
-  });
-}
-
-/** 此处后端没有提供注释 GET /post/get/vo */
-export async function getPostVoById(
-  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.getPostVOByIdParams,
+/** deletePost POST /api/post/delete */
+export async function deletePostUsingPost(
+  body: API.DeleteRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponsePostVO>('/post/get/vo', {
+  return request<API.BaseResponseBoolean_>('/api/post/delete', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** editPost POST /api/post/edit */
+export async function editPostUsingPost(
+  body: API.PostEditRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseBoolean_>('/api/post/edit', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** getPostVOById GET /api/post/get/vo */
+export async function getPostVoByIdUsingGet(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.getPostVOByIdUsingGETParams,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponsePostVO_>('/api/post/get/vo', {
     method: 'GET',
     params: {
       ...params,
@@ -53,12 +59,12 @@ export async function getPostVoById(
   });
 }
 
-/** 此处后端没有提供注释 POST /post/list/page/vo */
-export async function listPostVoByPage(
+/** listPostByPage POST /api/post/list/page */
+export async function listPostByPageUsingPost(
   body: API.PostQueryRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponsePagePostVO>('/post/list/page/vo', {
+  return request<API.BaseResponsePagePost_>('/api/post/list/page', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -68,12 +74,12 @@ export async function listPostVoByPage(
   });
 }
 
-/** 此处后端没有提供注释 POST /post/my/list/page/vo */
-export async function listMyPostVoByPage(
+/** listPostVOByPage POST /api/post/list/page/vo */
+export async function listPostVoByPageUsingPost(
   body: API.PostQueryRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponsePagePostVO>('/post/my/list/page/vo', {
+  return request<API.BaseResponsePagePostVO_>('/api/post/list/page/vo', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -83,12 +89,12 @@ export async function listMyPostVoByPage(
   });
 }
 
-/** 此处后端没有提供注释 POST /post/search/page/vo */
-export async function searchPostVoByPage(
+/** listMyPostVOByPage POST /api/post/my/list/page/vo */
+export async function listMyPostVoByPageUsingPost(
   body: API.PostQueryRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponsePagePostVO>('/post/search/page/vo', {
+  return request<API.BaseResponsePagePostVO_>('/api/post/my/list/page/vo', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -98,9 +104,27 @@ export async function searchPostVoByPage(
   });
 }
 
-/** 此处后端没有提供注释 POST /post/update */
-export async function updatePost(body: API.PostUpdateRequest, options?: { [key: string]: any }) {
-  return request<API.BaseResponseBoolean>('/post/update', {
+/** searchPostVOByPage POST /api/post/search/page/vo */
+export async function searchPostVoByPageUsingPost(
+  body: API.PostQueryRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponsePagePostVO_>('/api/post/search/page/vo', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** updatePost POST /api/post/update */
+export async function updatePostUsingPost(
+  body: API.PostUpdateRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseBoolean_>('/api/post/update', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

@@ -2,12 +2,12 @@
 /* eslint-disable */
 import { request } from '@umijs/max';
 
-/** 此处后端没有提供注释 POST /post_favour/ */
-export async function doPostFavour(
+/** doPostFavour POST /api/post_favour/ */
+export async function doPostFavourUsingPost(
   body: API.PostFavourAddRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponseInteger>('/post_favour/', {
+  return request<API.BaseResponseInt_>('/api/post_favour/', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -17,12 +17,12 @@ export async function doPostFavour(
   });
 }
 
-/** 此处后端没有提供注释 POST /post_favour/list/page */
-export async function listFavourPostByPage(
+/** listFavourPostByPage POST /api/post_favour/list/page */
+export async function listFavourPostByPageUsingPost(
   body: API.PostFavourQueryRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponsePagePostVO>('/post_favour/list/page', {
+  return request<API.BaseResponsePagePostVO_>('/api/post_favour/list/page', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -32,12 +32,12 @@ export async function listFavourPostByPage(
   });
 }
 
-/** 此处后端没有提供注释 POST /post_favour/my/list/page */
-export async function listMyFavourPostByPage(
+/** listMyFavourPostByPage POST /api/post_favour/my/list/page */
+export async function listMyFavourPostByPageUsingPost(
   body: API.PostQueryRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponsePagePostVO>('/post_favour/my/list/page', {
+  return request<API.BaseResponsePagePostVO_>('/api/post_favour/my/list/page', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

@@ -29,7 +29,7 @@ public class ContextRequest{
         return ListId;
     }
 
-    public void setListId(Integer listId) {
+    public void setListId(long listId) {
         ListId = listId;
     }
 

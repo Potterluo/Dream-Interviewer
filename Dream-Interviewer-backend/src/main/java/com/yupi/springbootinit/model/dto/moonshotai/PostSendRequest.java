@@ -23,14 +23,14 @@ public class PostSendRequest {
         this.temperature = temperature;
     }
 
-    public List<PostSendMessages> getMessages() {
+    public List<PostMessages> getMessages() {
         return messages;
     }
 
-    public void setMessages(List<PostSendMessages> messages) {
+    public void setMessages(List<PostMessages> messages) {
         this.messages = messages;
     }
 
-    List<PostSendMessages> messages;
+    List<PostMessages> messages;
     double temperature;
 }
