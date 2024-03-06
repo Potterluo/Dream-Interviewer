@@ -2,12 +2,9 @@
 /* eslint-disable */
 import { request } from '@umijs/max';
 
-/** doThumb POST /api/post_thumb/ */
-export async function doThumbUsingPost(
-  body: API.PostThumbAddRequest,
-  options?: { [key: string]: any },
-) {
-  return request<API.BaseResponseInt_>('/api/post_thumb/', {
+/** 此处后端没有提供注释 POST /post_thumb/ */
+export async function doThumb(body: API.PostThumbAddRequest, options?: { [key: string]: any }) {
+  return request<API.BaseResponseInteger>('/post_thumb/', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

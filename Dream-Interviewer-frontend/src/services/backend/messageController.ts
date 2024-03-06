@@ -2,13 +2,13 @@
 /* eslint-disable */
 import { request } from '@umijs/max';
 
-/** addMessageList POST /api/message/add */
-export async function addMessageListUsingPost(
+/** 此处后端没有提供注释 POST /message/add */
+export async function addMessageList(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.addMessageListUsingPOSTParams,
+  params: API.addMessageListParams,
   options?: { [key: string]: any },
 ) {
-  return request<number>('/api/message/add', {
+  return request<number>('/message/add', {
     method: 'POST',
     params: {
       ...params,
@@ -17,13 +17,13 @@ export async function addMessageListUsingPost(
   });
 }
 
-/** deleteMessageList GET /api/message/delete */
-export async function deleteMessageListUsingGet(
+/** 此处后端没有提供注释 GET /message/delete */
+export async function deleteMessageList(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.deleteMessageListUsingGETParams,
+  params: API.deleteMessageListParams,
   options?: { [key: string]: any },
 ) {
-  return request<boolean>('/api/message/delete', {
+  return request<boolean>('/message/delete', {
     method: 'GET',
     params: {
       ...params,
@@ -32,13 +32,13 @@ export async function deleteMessageListUsingGet(
   });
 }
 
-/** listMessageList GET /api/message/list */
-export async function listMessageListUsingGet(
+/** 此处后端没有提供注释 GET /message/list */
+export async function listMessageList(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.listMessageListUsingGETParams,
+  params: API.listMessageListParams,
   options?: { [key: string]: any },
 ) {
-  return request<API.MessageList[]>('/api/message/list', {
+  return request<API.MessageList[]>('/message/list', {
     method: 'GET',
     params: {
       ...params,
@@ -47,13 +47,13 @@ export async function listMessageListUsingGet(
   });
 }
 
-/** mainMessage GET /api/message/main */
-export async function mainMessageUsingGet(
+/** 此处后端没有提供注释 GET /message/main */
+export async function mainMessage(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.mainMessageUsingGETParams,
+  params: API.mainMessageParams,
   options?: { [key: string]: any },
 ) {
-  return request<string>('/api/message/main', {
+  return request<string>('/message/main', {
     method: 'GET',
     params: {
       ...params,

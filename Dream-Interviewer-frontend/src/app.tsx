@@ -1,16 +1,15 @@
 import Footer from '@/components/Footer';
+import { getLoginUser } from '@/services/backend/userController';
 import type { RunTimeLayoutConfig } from '@umijs/max';
 import { history } from '@umijs/max';
 import defaultSettings from '../config/defaultSettings';
 import { AvatarDropdown } from './components/RightContent/AvatarDropdown';
 import { requestConfig } from './requestConfig';
-import {getLoginUser} from "@/services/backend/userController";
-import {message} from "antd";
 
 const loginPath = '/user/login';
 const registerPath = '/user/register';
 const welcomePath = '/welcome';
-const NO_NEED_LOGIN_WHITE_LIST = [welcomePath,registerPath, loginPath];
+const NO_NEED_LOGIN_WHITE_LIST = [welcomePath, registerPath, loginPath];
 
 /**
  * @see  https://umijs.org/zh-CN/plugins/plugin-initial-state
@@ -27,7 +26,7 @@ export async function getInitialState(): Promise<InitialState> {
       initialState.currentUser = res.data;
     } catch (error: any) {
       // 如果未登录
-      if (!NO_NEED_LOGIN_WHITE_LIST.includes(history.location.pathname)){
+      if (!NO_NEED_LOGIN_WHITE_LIST.includes(history.location.pathname)) {
         history.push(welcomePath);
       }
     }

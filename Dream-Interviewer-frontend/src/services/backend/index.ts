@@ -13,14 +13,14 @@ import * as postThumbController from './postThumbController';
 import * as userController from './userController';
 import * as wxMpController from './wxMpController';
 export default {
-  wxMpController,
-  contextController,
-  fileController,
-  messageController,
-  moonshotController,
-  postController,
-  postFavourController,
-  postThumbController,
-  cvFileController,
   userController,
+  cvFileController,
+  postThumbController,
+  postFavourController,
+  postController,
+  messageController,
+  fileController,
+  contextController,
+  wxMpController,
+  moonshotController,
 };
