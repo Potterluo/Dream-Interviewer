@@ -54,9 +54,9 @@ export const requestConfig: RequestConfig = {
         throw new Error('请先登录');
       }
 
-      if (code !== 0) {
+      /*      if (code !== 0) {
         throw new Error(data.message ?? '服务器错误');
-      }
+      }*/
       return response;
     },
   ],
