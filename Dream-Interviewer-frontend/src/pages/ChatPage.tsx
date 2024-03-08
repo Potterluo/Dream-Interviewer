@@ -1,35 +1,11 @@
-import '@chatui/core/es/styles/index.less';
-import React, { useState } from 'react';
-// 引入组件
-import Chat, { Bubble, useMessages } from '@chatui/core';
-// 引入样式
-import { Button, GetProp, message, Modal, Tooltip, Upload, UploadProps } from 'antd';
-import '../../../../init/yupi-antd-frontend-init-master/src/pages/chatui-theme.css';
-
 import { chat } from '@/services/backend/contextController';
 import { Link, useModel } from '@@/exports';
-import { PlusOutlined } from '@ant-design/icons';
-import { LoadingOutlined } from '@ant-design/icons-svg';
-import { FloatButton } from 'antd';
-type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
-
-const getBase64 = (img: FileType, callback: (url: string) => void) => {
-  const reader = new FileReader();
-  reader.addEventListener('load', () => callback(reader.result as string));
-  reader.readAsDataURL(img);
-};
-
-const beforeUpload = (file: FileType) => {
-  const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-  if (!isJpgOrPng) {
-    message.error('You can only upload JPG/PNG file!');
-  }
-  const isLt2M = file.size / 1024 / 1024 < 2;
-  if (!isLt2M) {
-    message.error('Image must smaller than 2MB!');
-  }
-  return isJpgOrPng && isLt2M;
-};
+import Chat, { Bubble, useMessages } from '@chatui/core';
+import '@chatui/core/es/styles/index.less';
+import { Button, FloatButton, message, Tooltip, Upload, UploadProps } from 'antd';
+import React from 'react';
+import '../../../../init/yupi-antd-frontend-init-master/src/pages/chatui-theme.css';
+// import ContextRequest = API.ContextRequest; 一引入就报错，不引入也能用，就很奇怪
 
 // 定义消息类型
 interface Message {
@@ -59,6 +35,15 @@ const initialMessages = [
     },
     user: { avatar: '//gw.alicdn.com/tfs/TB1DYHLwMHqK1RjSZFEXXcGMXXa-56-62.svg' },
   },
+  /*  {
+    type: 'FileCard',
+    content: {
+      name: 'myFile.zip',
+      size: 12345,
+    },
+    position: 'left', // 假设机器人回复在左侧
+    user: { avatar: '//gw.alicdn.com/tfs/TB1DYHLwMHqK1RjSZFEXXcGMXXa-56-62.svg' },
+  },*/
 ];
 /*async function newMessageList({ userAccount }: { userAccount: string }) {
   try {
@@ -71,8 +56,7 @@ const initialMessages = [
 
 const ChatPage: React.FC = () => {
   // 使用useMessages自定义钩子
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const { messages, appendMsg, setTyping } = useMessages(initialMessages);
+  const { messages, appendMsg } = useMessages(initialMessages);
   const { initialState } = useModel('@@initialState');
   const { currentUser } = initialState || {};
   if (!currentUser) {
@@ -84,37 +68,13 @@ const ChatPage: React.FC = () => {
       </Link>
     );
   }
-  const [loading, setLoading] = useState(false);
-  const [imageUrl, setImageUrl] = useState<string>();
-
-  const handleChange: UploadProps['onChange'] = (info) => {
-    if (info.file.status === 'uploading') {
-      console.log('uploading');
-      /*setLoading(true);*/
-      /*return;*/
-    }
-    if (info.file.status === 'done') {
-      // Get this url from response in real world.
-      console.log('done');
-      /*      getBase64(info.file.originFileObj as FileType, (url) => {
-        setLoading(false);
-        setImageUrl(url);
-      });*/
-    }
-  };
-
-  const uploadButton = (
-    <button style={{ border: 0, background: 'none' }} type="button">
-      {loading ? <LoadingOutlined /> : <PlusOutlined />}
-      <div style={{ marginTop: 8 }}>Upload</div>
-    </button>
-  );
 
   /*  const listId = await addMessageList(currentUser.userName);
   函数不是异步的：await 只能用于等待返回 Promise 对象的异步函数。如果 addMessageList 函数没有返回 Promise，或者不是异步的，那么使用 await 就会导致错误。
 
 不在异步函数中使用：await 必须在 async 函数内部使用。如果你尝试在一个普通的函数或者全局作用域中使用 await，也会报错。*/
   //newMessageList({ userAccount: currentUser.userName });
+  // @ts-ignore
   async function sendMessage(requestBody: ContextRequest) {
     try {
       const response = await chat(requestBody);
@@ -127,6 +87,43 @@ const ChatPage: React.FC = () => {
       throw error; // 可以选择抛出错误，也可以根据实际情况处理错误逻辑
     }
   }
+  const props: UploadProps = {
+    name: 'cvfile',
+    //TODO 开发访问地址
+    action: 'http://localhost:8101/api/upload',
+    showUploadList: false,
+    maxCount: 1,
+    headers: {
+      authorization: 'authorization-text',
+    },
+    disabled: false,
+    onChange(info) {
+      /*      if (info.file.status !== 'uploading') {
+        console.log(info.file, info.fileList);
+      }*/
+      if (info.file.status === 'done') {
+        message.success(`${info.file.name} file uploaded successfully`);
+        appendMsg({
+          type: 'text',
+          position: 'left', // 假设机器人回复在左侧
+          content: {
+            text: `${info.file.name}上传成功，简历已收到。`,
+          },
+          user: { avatar: '//gw.alicdn.com/tfs/TB1DYHLwMHqK1RjSZFEXXcGMXXa-56-62.svg' },
+        });
+      } else if (info.file.status === 'error') {
+        message.error(`${info.file.name} file upload failed.`);
+        appendMsg({
+          type: 'text',
+          position: 'left', // 假设机器人回复在左侧
+          content: {
+            text: `${info.file.name}上传失败。`,
+          },
+          user: { avatar: '//gw.alicdn.com/tfs/TB1DYHLwMHqK1RjSZFEXXcGMXXa-56-62.svg' },
+        });
+      }
+    },
+  };
   const handleSend = (type: string, val: string) => {
     if (type === 'text' && val.trim()) {
       appendMsg({
@@ -139,6 +136,7 @@ const ChatPage: React.FC = () => {
         },
       });
 
+      // @ts-ignore
       const requestBody: ContextRequest = {
         userAccount: 'admin',
         messageRole: 'user',
@@ -177,36 +175,15 @@ const ChatPage: React.FC = () => {
     return <Bubble content={content.text} />;
   };
 
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
-
-  const onFloatClick = () => {
-    setIsModalOpen(true);
-  };
+  const onFloatClick = () => {};
 
   return (
     <div style={divStyle}>
-      <Tooltip title="简历上传">
-        <FloatButton onClick={onFloatClick} />
-      </Tooltip>
-      <Modal title="简历上传" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
-        <Upload
-          name="avatar"
-          listType="picture-card"
-          className="avatar-uploader"
-          showUploadList={false}
-          action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
-          beforeUpload={beforeUpload}
-          onChange={handleChange}
-        >
-          {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
-        </Upload>
-        <p>请上传*.pdf,*.doc,*.doc,*.txt等类型的简历文件</p>
-      </Modal>
+      {/*      <Modal title="简历上传" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+
+          <Button icon={<UploadOutlined />}>Click to upload</Button>
+
+      </Modal>*/}
       <Chat
         /* navbar={{ title: '智能助理' }}*/
         messages={messages}
@@ -214,6 +191,11 @@ const ChatPage: React.FC = () => {
         renderMessageContent={renderMessageContent}
         onSend={handleSend}
       />
+      <Upload {...props}>
+        <Tooltip title="简历上传">
+          <FloatButton onClick={onFloatClick} />
+        </Tooltip>
+      </Upload>
 
       <div
         style={{
