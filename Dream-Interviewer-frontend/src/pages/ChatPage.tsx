@@ -1,14 +1,35 @@
 import '@chatui/core/es/styles/index.less';
-import React from 'react';
+import React, { useState } from 'react';
 // 引入组件
 import Chat, { Bubble, useMessages } from '@chatui/core';
 // 引入样式
-import { Button } from 'antd';
+import { Button, GetProp, message, Modal, Tooltip, Upload, UploadProps } from 'antd';
 import '../../../../init/yupi-antd-frontend-init-master/src/pages/chatui-theme.css';
 
 import { chat } from '@/services/backend/contextController';
 import { Link, useModel } from '@@/exports';
+import { PlusOutlined } from '@ant-design/icons';
+import { LoadingOutlined } from '@ant-design/icons-svg';
 import { FloatButton } from 'antd';
+type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
+
+const getBase64 = (img: FileType, callback: (url: string) => void) => {
+  const reader = new FileReader();
+  reader.addEventListener('load', () => callback(reader.result as string));
+  reader.readAsDataURL(img);
+};
+
+const beforeUpload = (file: FileType) => {
+  const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+  if (!isJpgOrPng) {
+    message.error('You can only upload JPG/PNG file!');
+  }
+  const isLt2M = file.size / 1024 / 1024 < 2;
+  if (!isLt2M) {
+    message.error('Image must smaller than 2MB!');
+  }
+  return isJpgOrPng && isLt2M;
+};
 
 // 定义消息类型
 interface Message {
@@ -18,8 +39,8 @@ interface Message {
 }
 const divStyle: React.CSSProperties = {
   position: 'absolute',
-  width: '80%',
-  height: '88vh', // 设置高度为100%以填充父元素的高度
+  width: '80vw',
+  height: '85vh', // 设置高度为100%以填充父元素的高度
   left: '50%', // 设置左边距为50%
   transform: 'translateX(-50%)', // 使用transform将元素水平居中
 };
@@ -27,21 +48,18 @@ const initialMessages = [
   {
     type: 'text',
     content: {
-      text: '你好，我是小梦面试官，由keriko所设计的智能面试官。我已经准备好为您提供专业的面试优化服务。为了开始，请您提供您的简历和应聘职位的要求信息。这将帮助我更好地理解您的背景和应聘职位的具体需求，从而为您提供更加精准的面试准备和反馈。如果您已经准备好这些信息，请上传您的简历文件，我们就可以开始了。如果您有任何疑问或需要帮助，请随时告诉我~',
+      text: '你好，我是小梦面试官，由keriko所设计的智能面试官。我已经准备好为您提供专业的面试优化服务。为了开始，请您提供您的简历和应聘职位（JD）的要求信息。这将帮助我更好地理解您的背景和应聘职位的具体需求，从而为您提供更加精准的面试准备和反馈。如果您已经准备好这些信息，请上传您的简历文件，我们就可以开始了。如果您有任何疑问或需要帮助，请随时告诉我~',
     },
     user: { avatar: '//gw.alicdn.com/tfs/TB1DYHLwMHqK1RjSZFEXXcGMXXa-56-62.svg' },
   },
-  /*    {
-      type: 'image',
-      content: {
-        picUrl: 'https://img1.baidu.com/it/u=997155658,200652501&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=609',
-      },
-    },*/
+  {
+    type: 'text',
+    content: {
+      text: '请输入你想应聘的岗位及要求，点击页面右下角图标上传简历开始。',
+    },
+    user: { avatar: '//gw.alicdn.com/tfs/TB1DYHLwMHqK1RjSZFEXXcGMXXa-56-62.svg' },
+  },
 ];
-/*const file = {
-  name: 'myFile.zip',
-  size: 12345,
-};*/
 /*async function newMessageList({ userAccount }: { userAccount: string }) {
   try {
     const listId = await addMessageList(userAccount);
@@ -51,28 +69,9 @@ const initialMessages = [
   }
 }*/
 
-/*async function sendMessage({ contextRequest }: { contextRequest: ContextRequest }) {
-  try {
-    // 发起请求并等待响应
-    const response = await chat(contextRequest);
-    // 等待响应体转换为JSON
-
-    const data = response.data.messageContent();
-
-    if (!response.ok) {
-      // 处理非2xx的响应
-      throw new Error(data.message || '请求失败');
-    }
-
-    return data; // 返回数据供其他操作使用
-  } catch (error) {
-    console.error('接口调用出错:', error);
-    // 可以在这里处理错误，比如显示错误消息
-  }
-}*/
-
 const ChatPage: React.FC = () => {
   // 使用useMessages自定义钩子
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { messages, appendMsg, setTyping } = useMessages(initialMessages);
   const { initialState } = useModel('@@initialState');
   const { currentUser } = initialState || {};
@@ -85,6 +84,32 @@ const ChatPage: React.FC = () => {
       </Link>
     );
   }
+  const [loading, setLoading] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string>();
+
+  const handleChange: UploadProps['onChange'] = (info) => {
+    if (info.file.status === 'uploading') {
+      console.log('uploading');
+      /*setLoading(true);*/
+      /*return;*/
+    }
+    if (info.file.status === 'done') {
+      // Get this url from response in real world.
+      console.log('done');
+      /*      getBase64(info.file.originFileObj as FileType, (url) => {
+        setLoading(false);
+        setImageUrl(url);
+      });*/
+    }
+  };
+
+  const uploadButton = (
+    <button style={{ border: 0, background: 'none' }} type="button">
+      {loading ? <LoadingOutlined /> : <PlusOutlined />}
+      <div style={{ marginTop: 8 }}>Upload</div>
+    </button>
+  );
+
   /*  const listId = await addMessageList(currentUser.userName);
   函数不是异步的：await 只能用于等待返回 Promise 对象的异步函数。如果 addMessageList 函数没有返回 Promise，或者不是异步的，那么使用 await 就会导致错误。
 
@@ -108,7 +133,10 @@ const ChatPage: React.FC = () => {
         type: 'text',
         content: { text: val },
         position: 'right',
-        user: { avatar: currentUser.userAvatar },
+        user: {
+          avatar:
+            currentUser.userAvatar ?? 'https://pic.imgdb.cn/item/65eae1529f345e8d03011b3b.png',
+        },
       });
 
       const requestBody: ContextRequest = {
@@ -149,9 +177,36 @@ const ChatPage: React.FC = () => {
     return <Bubble content={content.text} />;
   };
 
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
+  const onFloatClick = () => {
+    setIsModalOpen(true);
+  };
+
   return (
     <div style={divStyle}>
-      <FloatButton onClick={() => console.log('onClick')} />
+      <Tooltip title="简历上传">
+        <FloatButton onClick={onFloatClick} />
+      </Tooltip>
+      <Modal title="简历上传" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+        <Upload
+          name="avatar"
+          listType="picture-card"
+          className="avatar-uploader"
+          showUploadList={false}
+          action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+          beforeUpload={beforeUpload}
+          onChange={handleChange}
+        >
+          {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
+        </Upload>
+        <p>请上传*.pdf,*.doc,*.doc,*.txt等类型的简历文件</p>
+      </Modal>
       <Chat
         /* navbar={{ title: '智能助理' }}*/
         messages={messages}
@@ -159,12 +214,12 @@ const ChatPage: React.FC = () => {
         renderMessageContent={renderMessageContent}
         onSend={handleSend}
       />
+
       <div
         style={{
           display: 'flex',
           justifyContent: 'center',
           color: '#808080',
-
           /*        justify-content: center; /!* 水平居中 *!/
         align-items: center; /!* 垂直居中 *!/
         text-align: center; /!* 文字居中 *!/

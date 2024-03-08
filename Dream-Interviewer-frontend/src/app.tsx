@@ -9,6 +9,7 @@ import { requestConfig } from './requestConfig';
 const loginPath = '/user/login';
 const registerPath = '/user/register';
 const welcomePath = '/welcome';
+const errorPath = '/404';
 const NO_NEED_LOGIN_WHITE_LIST = [welcomePath, registerPath, loginPath];
 
 /**

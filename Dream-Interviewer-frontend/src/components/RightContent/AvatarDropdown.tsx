@@ -64,7 +64,7 @@ export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
   }
 
   const menuItems = [
-/*    ...(menu
+    /*    ...(menu
       ? [
           {
             key: 'center',
@@ -103,7 +103,12 @@ export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
     >
       <Space>
         {currentUser?.userAvatar ? (
-          <Avatar size="small" src={currentUser?.userAvatar} />
+          <Avatar
+            size="small"
+            src={
+              currentUser?.userAvatar ?? 'https://pic.imgdb.cn/item/65eae1529f345e8d03011b3b.png'
+            }
+          />
         ) : (
           <Avatar size="small" icon={<UserOutlined />} />
         )}
