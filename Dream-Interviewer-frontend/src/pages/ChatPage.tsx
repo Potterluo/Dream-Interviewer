@@ -1,10 +1,12 @@
 import { chat } from '@/services/backend/contextController';
+import { uploadFile } from '@/services/backend/cvFileController';
 import { Link, useModel } from '@@/exports';
 import Chat, { Bubble, useMessages } from '@chatui/core';
 import '@chatui/core/es/styles/index.less';
-import { Button, FloatButton, message, Tooltip, Upload, UploadProps } from 'antd';
+import { Button, FloatButton, GetProp, message, Tooltip, Upload, UploadProps } from 'antd';
 import React from 'react';
 import '../../../../init/yupi-antd-frontend-init-master/src/pages/chatui-theme.css';
+
 // import ContextRequest = API.ContextRequest; 一引入就报错，不引入也能用，就很奇怪
 
 // 定义消息类型
@@ -35,24 +37,27 @@ const initialMessages = [
     },
     user: { avatar: '//gw.alicdn.com/tfs/TB1DYHLwMHqK1RjSZFEXXcGMXXa-56-62.svg' },
   },
-  /*  {
-    type: 'FileCard',
-    content: {
-      name: 'myFile.zip',
-      size: 12345,
-    },
-    position: 'left', // 假设机器人回复在左侧
-    user: { avatar: '//gw.alicdn.com/tfs/TB1DYHLwMHqK1RjSZFEXXcGMXXa-56-62.svg' },
-  },*/
 ];
-/*async function newMessageList({ userAccount }: { userAccount: string }) {
-  try {
-    const listId = await addMessageList(userAccount);
-    // 处理 listId
-  } catch (error) {
-    // 处理错误
+type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
+const allowedTypes = [
+  'application/pdf',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/msword',
+  'text/plain',
+];
+const beforeUpload = (file: FileType) => {
+  const isAllowedType = allowedTypes.includes(file.type);
+  const isSizeValid = file.size / 1024 / 1024 < 10; // 10MB
+
+  if (!isAllowedType) {
+    message.error('你必须上传 PDF, DOC, DOCX, TXT 等类型的简历!');
   }
-}*/
+  if (!isSizeValid) {
+    message.error('简历文件必须小于10M！');
+  }
+
+  return isAllowedType && isSizeValid;
+};
 
 const ChatPage: React.FC = () => {
   // 使用useMessages自定义钩子
@@ -78,7 +83,6 @@ const ChatPage: React.FC = () => {
   async function sendMessage(requestBody: ContextRequest) {
     try {
       const response = await chat(requestBody);
-
       // 返回响应中的messageContent属性值
       return response.messageContent;
     } catch (error) {
@@ -90,13 +94,15 @@ const ChatPage: React.FC = () => {
   const props: UploadProps = {
     name: 'cvfile',
     //TODO 开发访问地址
-    action: 'http://localhost:8101/api/upload',
-    showUploadList: false,
+    /*action: 'http://localhost:8101/api/upload',*/
+    showUploadList: true,
     maxCount: 1,
+    disabled: false,
+    beforeUpload: beforeUpload,
+    customRequest: uploadCvFile,
     headers: {
       authorization: 'authorization-text',
     },
-    disabled: false,
     onChange(info) {
       /*      if (info.file.status !== 'uploading') {
         console.log(info.file, info.fileList);
@@ -124,6 +130,49 @@ const ChatPage: React.FC = () => {
       }
     },
   };
+  async function uploadCvFile(option: { file: any }) {
+    const file = option.file as File;
+
+    // 如果文件类型和大小都符合要求，调用后端上传接口
+    try {
+      const formData = new FormData();
+      formData.append('cvfile', file); // 假设后端期望文件字段名为'file'
+      const requestFileBody: ContextRequest = {
+        userAccount: 'admin',
+        messageRole: 'user',
+        messageContent: '',
+        listId: 81097580,
+      };
+      console.log('开始上传');
+      appendMsg({
+        type: 'text',
+        content: { text: `${file.name}` },
+        position: 'right',
+        user: {
+          avatar:
+            currentUser.userAvatar ?? 'https://pic.imgdb.cn/item/65eae1529f345e8d03011b3b.png',
+        },
+      });
+      const cvcontent = await uploadFile(requestFileBody, formData);
+      const requestCvBody: ContextRequest = {
+        userAccount: 'admin',
+        messageRole: 'user',
+        messageContent: cvcontent,
+        listId: 81097580,
+      };
+      const response = await chat(requestCvBody);
+      console.log(response);
+      appendMsg({
+        type: 'text',
+        content: { text: response.messageContent },
+        position: 'left',
+        user: { avatar: '//gw.alicdn.com/tfs/TB1DYHLwMHqK1RjSZFEXXcGMXXa-56-62.svg' },
+      });
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      throw error; // 可以选择抛出错误，也可以根据实际情况处理错误逻辑
+    }
+  }
   const handleSend = (type: string, val: string) => {
     if (type === 'text' && val.trim()) {
       appendMsg({
@@ -141,7 +190,7 @@ const ChatPage: React.FC = () => {
         userAccount: 'admin',
         messageRole: 'user',
         messageContent: val,
-        listId: 1236346234,
+        listId: 81097580,
       };
 
       /*      appendMsg({

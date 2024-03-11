@@ -1,4 +1,4 @@
-package com.yupi.springbootinit.model.dto.file;
+package com.yupi.springbootinit.model.dto.context.request;
 
 import org.springframework.web.multipart.MultipartFile;
 

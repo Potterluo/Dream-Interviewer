@@ -1,5 +1,5 @@
 import { userLogout } from '@/services/backend/userController';
-import { LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
+import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import { history, useModel } from '@umijs/max';
 import { Avatar, Button, Space } from 'antd';
 import { stringify } from 'querystring';
@@ -81,11 +81,11 @@ export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
           },
         ]
       : []),*/
-    {
+    /*    {
       key: 'settings',
       icon: <SettingOutlined />,
       label: '个人设置',
-    },
+    },*/
     {
       key: 'logout',
       icon: <LogoutOutlined />,

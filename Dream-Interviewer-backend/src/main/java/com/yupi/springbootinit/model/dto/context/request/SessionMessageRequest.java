@@ -1,4 +1,4 @@
-package com.yupi.springbootinit.model.dto.context;
+package com.yupi.springbootinit.model.dto.context.request;
 
 import com.yupi.springbootinit.model.dto.moonshotai.PostMessages;
 import com.yupi.springbootinit.model.dto.moonshotai.PostSendRequest;

@@ -1,4 +1,4 @@
-package com.yupi.springbootinit.model.dto.context;
+package com.yupi.springbootinit.model.dto.context.request;
 
 public class ContextRequest{
     public String getUserAccount() {

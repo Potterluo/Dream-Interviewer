@@ -5,8 +5,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yupi.springbootinit.common.ErrorCode;
 import com.yupi.springbootinit.exception.BusinessException;
-import com.yupi.springbootinit.model.dto.context.ContextRequest;
-import com.yupi.springbootinit.model.dto.context.SessionMessageRequest;
+import com.yupi.springbootinit.model.dto.context.request.ContextRequest;
+import com.yupi.springbootinit.model.dto.context.request.SessionMessageRequest;
 import com.yupi.springbootinit.model.dto.moonshotai.PostMessages;
 import com.yupi.springbootinit.model.dto.moonshotai.PostReceiveChoices;
 import com.yupi.springbootinit.model.dto.moonshotai.PostReceiveRequest;
@@ -14,13 +14,13 @@ import com.yupi.springbootinit.model.dto.moonshotai.PostSendRequest;
 import com.yupi.springbootinit.model.entity.Context;
 import com.yupi.springbootinit.service.ContextService;
 import com.yupi.springbootinit.mapper.ContextMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,34 +32,6 @@ import java.util.List;
 public class ContextServiceImpl extends ServiceImpl<ContextMapper, Context>
     implements ContextService{
     public ContextRequest sendReceive(HttpServletRequest request, ContextRequest contextRequest){
-        /*//存储对话信息
-        Context context = new Context();
-        context.setTimeStamp(new java.util.Date());
-        context.setUserAccount(contextRequest.getUserAccount());
-        context.setMessageRole(contextRequest.getMessageRole());
-        //byte[] bytes = messageContent.getBytes(StandardCharsets.UTF_8);
-        context.setMessageContent(contextRequest.getMessageContent());
-        context.setListId(contextRequest.getListId());
-        context.setMessageModel("moonshot-v1-8k");
-        boolean saveResult = this.save(context);
-        if (!saveResult) {
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "发送消息失败");
-        }
-        //整合对话信息进入Session
-        SessionMessageService sessionMessageService = new SessionMessageService();
-        sessionMessageService.addMessageList(request,contextRequest);
-        //调用
-        PostSendRequest postSendRequest = new PostSendRequest();
-        PostMessages postMessages = new PostMessages();
-        postMessages.setRole("assistant");
-        postMessages.setContent("欢迎回来");
-        List<PostMessages> postMessagesList = new ArrayList<>();
-        //解析（receive）
-        postMessagesList.add(postMessages);
-        postSendRequest.setMessages(postMessagesList);
-        ContextRequest receiveRequest = new ContextRequest();
-        //改session
-        //ContextRequest latestContextRequest = postSendRequest.getMessages();
 
         //存数据库*/
         int contextId = addContextSql(contextRequest);
@@ -69,7 +41,9 @@ public class ContextServiceImpl extends ServiceImpl<ContextMapper, Context>
         //读session
         long listId = contextRequest.getListId();
         HttpSession session = request.getSession();
+        //TODO 文件传输接口不能传递回来ListId信息，暂时不做ListId区分
         SessionMessageRequest  contextSession = (SessionMessageRequest) session.getAttribute("sessionMessageRequest"+contextRequest.getListId());
+        //SessionMessageRequest  contextSession = (SessionMessageRequest) session.getAttribute("sessionMessageRequest");
         //获取发送对象
         PostSendRequest postSendRequest = contextSession.getPostSendRequest();
         //请MoonShot发出调用请求
@@ -157,10 +131,14 @@ public class ContextServiceImpl extends ServiceImpl<ContextMapper, Context>
  * @param postSendRequest 包含要发送到Moonshot AI的消息内容的PostSendRequest对象。
  * @return PostReceiveRequest对象，包含从Moonshot AI接收到的响应。
  */
+//@Value("${moonshot.api.key}")
+String API_KEY = "sk-EuMYqAL9j2h3aa1Pk8jqN0b49bdqJGp1JZLR1Cpn2faICAdh" ;
+//@Value("${moonshot.api.base-url}")
+String API_BASE_URL = "https://api.moonshot.cn/v1";
 public PostReceiveRequest sendMessagesToMoonshot(HttpServletRequest request, PostSendRequest postSendRequest){
-    final String API_BASE_URL = "https://api.moonshot.cn/v1";
+
     // 设置API密钥
-    final String API_KEY = "sk-UqKpQQ4cw6wR1oDpfyy5ZBzUyV1BSQD6VKlVVElULpXSFFo7";
+
     RestTemplate restTemplate = new RestTemplate();
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
@@ -171,7 +149,8 @@ public PostReceiveRequest sendMessagesToMoonshot(HttpServletRequest request, Pos
     try {
         // 使用RestTemplate发送POST请求
         ResponseEntity<String> response = restTemplate.exchange(
-                API_BASE_URL + "/chat/completions",
+                /*API_BASE_URL + "/chat/completions"*/
+                "https://api.moonshot.cn/v1/chat/completions",
                 HttpMethod.POST,
                 entity,
                 String.class);

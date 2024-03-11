@@ -317,6 +317,10 @@ declare namespace API {
     uploadFileRequest: UploadFileRequest;
   };
 
+  type uploadFileParams = {
+    contextRequest: ContextRequest;
+  };
+
   type UploadFileRequest = {
     biz?: string;
   };

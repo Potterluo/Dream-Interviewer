@@ -1,6 +1,6 @@
 package com.yupi.springbootinit.service;
 
-import com.yupi.springbootinit.model.dto.context.ContextRequest;
+import com.yupi.springbootinit.model.dto.context.request.ContextRequest;
 import com.yupi.springbootinit.model.dto.moonshotai.PostReceiveRequest;
 import com.yupi.springbootinit.model.dto.moonshotai.PostSendRequest;
 import com.yupi.springbootinit.model.entity.Context;

@@ -3,6 +3,8 @@ package com.yupi.springbootinit.controller;
 import com.yupi.springbootinit.model.dto.moonshotai.PostMessages;
 import com.yupi.springbootinit.model.dto.moonshotai.PostSendRequest;
 
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
@@ -15,10 +17,13 @@ import java.util.Map;
 @RestController
 @RequestMapping("/moonshot")
 public class MoonshotController {
-    // Moonshot AI API的基础URL
-    private static final String API_BASE_URL = "https://api.moonshot.cn/v1";
-    // API密钥，请替换为实际密钥
-    private static final String API_KEY = "sk-UqKpQQ4cw6wR1oDpfyy5ZBzUyV1BSQD6VKlVVElULpXSFFo7";
+
+
+    @Value("${moonshot.api.base-url}")
+    private  String API_BASE_URL;
+
+    @Value("${moonshot.api.key}")
+    private  String API_KEY;
 
     /**
      * 与Moonshot AI API进行对话。
@@ -47,13 +52,14 @@ public class MoonshotController {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("Authorization", "Bearer " + API_KEY);
+        headers.set("Authorization", "Bearer " + "sk-EuMYqAL9j2h3aa1Pk8jqN0b49bdqJGp1JZLR1Cpn2faICAdh");
         HttpEntity<Object> entity = new HttpEntity<>(requestBody, headers);
 
         try {
             // 发送POST请求到Moonshot AI的API
             ResponseEntity<String> response = restTemplate.exchange(
-                    API_BASE_URL + "/chat/completions",
+                    /*API_BASE_URL + "/chat/completions"*/
+                    "https://api.moonshot.cn/v1/chat/completions",
                     HttpMethod.POST,
                     entity,
                     String.class);

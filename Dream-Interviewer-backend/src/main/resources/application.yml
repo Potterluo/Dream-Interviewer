@@ -58,9 +58,13 @@ server:
 file:
   upload:
     path: E:\TestUpload
-myapp:
-  API_KEY: afdasfwsadfreawgf
-  API_BASE_URL: http://localhost:8101
+moonshot:
+  # AI调用相关
+  api:
+    BASE_URL: https://api.moonshot.cn/v1
+    key: sk-EuMYqAL9j2h3aa1Pk8jqN0b49bdqJGp1JZLR1Cpn2faICAdh
+global:
+  messagelistid: 124124
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: false

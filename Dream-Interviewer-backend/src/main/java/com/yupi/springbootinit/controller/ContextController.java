@@ -1,8 +1,6 @@
 package com.yupi.springbootinit.controller;
 
-import com.yupi.springbootinit.model.dto.context.ContextRequest;
-import com.yupi.springbootinit.model.dto.moonshotai.PostReceiveRequest;
-import com.yupi.springbootinit.model.dto.moonshotai.PostSendRequest;
+import com.yupi.springbootinit.model.dto.context.request.ContextRequest;
 import com.yupi.springbootinit.model.entity.Context;
 import com.yupi.springbootinit.service.ContextService;
 import lombok.extern.slf4j.Slf4j;
