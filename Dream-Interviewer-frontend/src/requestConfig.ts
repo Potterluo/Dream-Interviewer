@@ -53,6 +53,36 @@ export const requestConfig: RequestConfig = {
         window.location.href = `/user/login?redirect=${window.location.href}`;
         throw new Error('请先登录');
       }
+      if (code === 40000) {
+        // 跳转至登录页
+
+        throw new Error('用户名或密码错误');
+      }
+      if (code === 40101) {
+        // 跳转至登录页
+
+        throw new Error('无权限');
+      }
+      if (code === 40400) {
+        // 跳转至登录页
+
+        throw new Error('请求数据不存在');
+      }
+      if (code === 40300) {
+        // 跳转至登录页
+
+        throw new Error('禁止访问');
+      }
+      if (code === 50000) {
+        // 跳转至登录页
+
+        throw new Error('系统内部异常');
+      }
+      if (code === 50001) {
+        // 跳转至登录页
+
+        throw new Error('操作失败');
+      }
 
       /*      if (code !== 0) {
         throw new Error(data.message ?? '服务器错误');

@@ -1,0 +1,8 @@
+moonshot:
+  # AI调用相关
+  url: https://api.moonshot.cn/v1
+  key: sk-EuMYqAL9j2h3aa1Pk8jqN0b49bdqJGp1JZLR1Cpn2faICAdh
+
+file:
+  upload:
+    path: E:\TestUpload

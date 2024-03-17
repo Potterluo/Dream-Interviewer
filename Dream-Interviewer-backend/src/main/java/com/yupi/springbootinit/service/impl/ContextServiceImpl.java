@@ -12,8 +12,10 @@ import com.yupi.springbootinit.model.dto.moonshotai.PostReceiveChoices;
 import com.yupi.springbootinit.model.dto.moonshotai.PostReceiveRequest;
 import com.yupi.springbootinit.model.dto.moonshotai.PostSendRequest;
 import com.yupi.springbootinit.model.entity.Context;
+import com.yupi.springbootinit.model.enums.MoonshotAPI;
 import com.yupi.springbootinit.service.ContextService;
 import com.yupi.springbootinit.mapper.ContextMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,9 @@ import java.util.List;
 @Service
 public class ContextServiceImpl extends ServiceImpl<ContextMapper, Context>
     implements ContextService{
+    @Autowired
+    private MoonshotAPI moonshotAPI;
+
     public ContextRequest sendReceive(HttpServletRequest request, ContextRequest contextRequest){
 
         //存数据库*/
@@ -131,10 +136,7 @@ public class ContextServiceImpl extends ServiceImpl<ContextMapper, Context>
  * @param postSendRequest 包含要发送到Moonshot AI的消息内容的PostSendRequest对象。
  * @return PostReceiveRequest对象，包含从Moonshot AI接收到的响应。
  */
-//@Value("${moonshot.api.key}")
-String API_KEY = "sk-EuMYqAL9j2h3aa1Pk8jqN0b49bdqJGp1JZLR1Cpn2faICAdh" ;
-//@Value("${moonshot.api.base-url}")
-String API_BASE_URL = "https://api.moonshot.cn/v1";
+
 public PostReceiveRequest sendMessagesToMoonshot(HttpServletRequest request, PostSendRequest postSendRequest){
 
     // 设置API密钥
@@ -143,14 +145,15 @@ public PostReceiveRequest sendMessagesToMoonshot(HttpServletRequest request, Pos
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
     // 在请求头中添加Authorization信息
-    headers.set("Authorization", "Bearer " + API_KEY);
+    headers.set("Authorization", "Bearer " + moonshotAPI.getAPI_KEY());
+    System.out.println("apikey:"+moonshotAPI.getAPI_KEY()+"*=url=*:"+ moonshotAPI.getBASE_URL());
     HttpEntity<Object> entity = new HttpEntity<>(postSendRequest, headers);
 
     try {
         // 使用RestTemplate发送POST请求
         ResponseEntity<String> response = restTemplate.exchange(
-                /*API_BASE_URL + "/chat/completions"*/
-                "https://api.moonshot.cn/v1/chat/completions",
+                moonshotAPI.getBASE_URL() + "/chat/completions",
+                /*"https://api.moonshot.cn/v1/chat/completions",*/
                 HttpMethod.POST,
                 entity,
                 String.class);

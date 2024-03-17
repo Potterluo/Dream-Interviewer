@@ -1,6 +1,8 @@
 package com.yupi.springbootinit.model.dto.moonshotai;
 
-public class PostMessages {
+import java.io.Serializable;
+
+public class PostMessages implements Serializable {
     public String getRole() {
         return role;
     }

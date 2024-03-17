@@ -3,6 +3,8 @@ package com.yupi.springbootinit.service.impl;
 import com.yupi.springbootinit.model.dto.context.request.ContextRequest;
 import com.yupi.springbootinit.model.dto.context.request.SessionMessageRequest;
 import com.yupi.springbootinit.model.dto.moonshotai.PostMessages;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -12,6 +14,7 @@ import java.util.List;
 /**
  * 会话消息服务实现类
  */
+
 public class SessionMessageService {
 
     /**
@@ -20,6 +23,11 @@ public class SessionMessageService {
      * @param request HttpServletRequest对象，用于获取会话
      * @param contextRequest 上下文请求对象，包含列表ID和用户信息
      */
+
+    @Autowired
+    private RedisTemplate<String, SessionMessageRequest> redisTemplate;
+
+
     public void newMessageList(HttpServletRequest request, ContextRequest contextRequest){
         SessionMessageRequest sessionMessageRequest = new SessionMessageRequest();
         sessionMessageRequest.setListId(contextRequest.getListId());
@@ -86,9 +94,11 @@ public class SessionMessageService {
         // 将sessionMessageRequest对象保存到会话中
         //TODO messageList
         session.setAttribute("sessionMessageRequest"+contextRequest.getListId(), sessionMessageRequest);
+        //RedisUtils redisUtil = new RedisUtils();
+        //redisUtils.set("sessionMessageRequest"+contextRequest.getListId(), sessionMessageRequest);
         //session.setAttribute("sessionMessageRequest", sessionMessageRequest);
-        System.out.println("新建Seesion成功");
-        System.out.println(session.getAttribute("sessionMessageRequest"));
+        System.out.println("新建Seesion成功"+contextRequest.getListId());
+        System.out.println(session.getAttribute("sessionMessageRequest"+contextRequest.getListId()));
     }
 
     /**
@@ -103,6 +113,8 @@ public class SessionMessageService {
         // 尝试从会话中获取SessionMessageRequest对象
         //TODO ListID
         SessionMessageRequest sessionMessageRequest = (SessionMessageRequest) session.getAttribute("sessionMessageRequest" + contextRequest.getListId());
+        //SessionMessageRequest sessionMessageRequest = (SessionMessageRequest) redisUtils.get("sessionMessageRequest"+contextRequest.getListId());
+        System.out.println("listId"+contextRequest.getListId());
         //SessionMessageRequest sessionMessageRequest = (SessionMessageRequest) session.getAttribute("sessionMessageRequest");
 
         if (sessionMessageRequest != null) {
@@ -114,9 +126,10 @@ public class SessionMessageService {
 
             // 更新会话中的SessionMessageRequest对象
             //TODO MessageListID
+            //redisUtils.set("sessionMessageRequest"+contextRequest.getListId(), sessionMessageRequest);
             session.setAttribute("sessionMessageRequest" + contextRequest.getListId(), sessionMessageRequest);
             //session.setAttribute("sessionMessageRequest" , sessionMessageRequest);
-            System.out.println("添加Seesion成功");
+            System.out.println("添加Seesion成功"+contextRequest.getListId());
             System.out.println(sessionMessageRequest.getMessagesList());
         } else {
             // 如果SessionMessageRequest对象不存在，则调用新建消息列表方法

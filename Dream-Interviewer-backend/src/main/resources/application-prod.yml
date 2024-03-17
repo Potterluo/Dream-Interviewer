@@ -3,22 +3,33 @@
 # @from <a href="https://yupi.icu">编程导航知识星球</a>
 server:
   port: 8101
+  address: 0.0.0.0
+  servlet:
+    context-path: /api
+    # cookie 30 天过期
+    session:
+      cookie:
+        max-age: 2592000
+      timeout: 2592000
+      store-type: redis
 spring:
   # 数据库配置
   # todo 需替换配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/my_db
-    username: root
-    password: 123456
+    url: jdbc:mysql://172.16.250.175:3306/interviewer_db
+    username: xiaoMeng
+    password: zn3x2bZFmhdJ8Pi2
+  session:
+    # 30 天过期
+    timeout: 2592000
   # Redis 配置
   # todo 需替换配置
   redis:
     database: 1
-    host: localhost
+    host: 127.0.0.1
     port: 6379
-    timeout: 5000
-    password: 123456
+    timeout: 2592000
   # Elasticsearch 配置
   # todo 需替换配置
   elasticsearch:
@@ -35,3 +46,6 @@ knife4j:
     enable: true
     username: root
     password: 123456
+file:
+  upload:
+    path: /www/wwwroot/Dream_Interviewer/uploadfile/

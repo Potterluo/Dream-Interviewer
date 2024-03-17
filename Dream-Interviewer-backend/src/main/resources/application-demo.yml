@@ -71,13 +71,15 @@ server:
     session:
       cookie:
         max-age: 2592000
+# TODO 文件上传路径配置
 file:
   upload:
-    path: E:\TestUpload\
+    path: xxxxxx #注意windows平台与Linux平台路径不同
+# TODO AI调用配置
 moonshot:
   # AI调用相关
-    url: https://api.moonshot.cn/v1
-    key: sk-EuMYqAL9j2h3aa1Pk8jqN0b49bdqJGp1JZLR1Cpn2faICAdh
+    url:   xxxx
+    key: xxxx
 
 mybatis-plus:
   configuration:

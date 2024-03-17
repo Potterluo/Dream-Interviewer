@@ -95,7 +95,7 @@ const ChatPage: React.FC = () => {
     name: 'cvfile',
     //TODO 开发访问地址
     /*action: 'http://localhost:8101/api/upload',*/
-    showUploadList: true,
+    showUploadList: false,
     maxCount: 1,
     disabled: false,
     beforeUpload: beforeUpload,
@@ -137,6 +137,7 @@ const ChatPage: React.FC = () => {
     try {
       const formData = new FormData();
       formData.append('cvfile', file); // 假设后端期望文件字段名为'file'
+      // @ts-ignore
       const requestFileBody: ContextRequest = {
         userAccount: 'admin',
         messageRole: 'user',
@@ -144,16 +145,19 @@ const ChatPage: React.FC = () => {
         listId: 81097580,
       };
       console.log('开始上传');
+
       appendMsg({
         type: 'text',
         content: { text: `${file.name}` },
         position: 'right',
         user: {
           avatar:
+            // @ts-ignore
             currentUser.userAvatar ?? 'https://pic.imgdb.cn/item/65eae1529f345e8d03011b3b.png',
         },
       });
       const cvcontent = await uploadFile(requestFileBody, formData);
+      // @ts-ignore
       const requestCvBody: ContextRequest = {
         userAccount: 'admin',
         messageRole: 'user',

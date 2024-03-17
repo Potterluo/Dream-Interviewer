@@ -1,6 +1,8 @@
 package com.yupi.springbootinit.model.dto.context.request;
 
-public class ContextRequest{
+import java.io.Serializable;
+
+public class ContextRequest implements Serializable {
     public String getUserAccount() {
         return userAccount;
     }
@@ -37,4 +39,5 @@ public class ContextRequest{
     String messageRole;
     String messageContent;
     long ListId;
+    private static final long serialVersionUID = 1L; // 序列化版本号
 }

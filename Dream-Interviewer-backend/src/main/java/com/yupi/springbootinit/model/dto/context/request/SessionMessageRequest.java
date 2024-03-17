@@ -3,9 +3,10 @@ package com.yupi.springbootinit.model.dto.context.request;
 import com.yupi.springbootinit.model.dto.moonshotai.PostMessages;
 import com.yupi.springbootinit.model.dto.moonshotai.PostSendRequest;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class SessionMessageRequest {
+public class SessionMessageRequest implements Serializable {
     long listId;
     String userAccount;
     String model;

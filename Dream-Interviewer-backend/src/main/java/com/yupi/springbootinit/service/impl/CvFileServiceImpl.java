@@ -1,12 +1,12 @@
 package com.yupi.springbootinit.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.yupi.springbootinit.model.dto.context.request.ContextRequest;
-import com.yupi.springbootinit.model.dto.context.request.GlobalMessageList;
 import com.yupi.springbootinit.model.dto.context.response.FileContentResponse;
 import com.yupi.springbootinit.model.dto.context.response.UploadFileResopnse;
+import com.yupi.springbootinit.model.enums.FilePath;
+import com.yupi.springbootinit.model.enums.MoonshotAPI;
+import com.yupi.springbootinit.service.CvFileService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
@@ -20,53 +20,52 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 @Service
-public class CvFileService {
+public class CvFileServiceImpl
+implements CvFileService {
+
     // @Value("${moonshot.api.key}")
-    static String MOONSHOT_API_KEY = "sk-EuMYqAL9j2h3aa1Pk8jqN0b49bdqJGp1JZLR1Cpn2faICAdh";
-    //@Value("${moonshot.api.base_url}")
-    static String MOONSHOT_API_BASE_URL = "https://api.moonshot.cn/v1";
 
-    private final RestTemplate restTemplate;
-
-    /*private final GlobalMessageList globalMessageList;*/
-
-/*
     @Autowired
-    public CvFileService(GlobalMessageList globalMessageList){
-        this.globalMessageList = globalMessageList;
-    }
-*/
+    private  MoonshotAPI moonshotAPI;
+
+    @Autowired
+    private FilePath filePath;
+    //TODO 上传时修改
+/*    String uploadPath = "E:\\TestUpload";*/
+
+    private static final RestTemplate restTemplate;
 
 
-    public CvFileService(RestTemplateBuilder restTemplateBuilder) {
-        this.restTemplate = restTemplateBuilder
+
+
+    static {
+        RestTemplateBuilder restTemplateBuilder = new RestTemplateBuilder();
+        restTemplate = restTemplateBuilder
                 .setConnectTimeout(Duration.ofSeconds(30))
                 .setReadTimeout(Duration.ofSeconds(30))
                 .build();
     }
 
+    public CvFileServiceImpl() {
+    }
+
     public String getFileContent(String fileId) {
         // 构建请求URL
-        String url = MOONSHOT_API_BASE_URL+"/files/" + fileId + "/content";
+        String url = moonshotAPI.getBASE_URL()+"/files/" + fileId + "/content";
         // 设置请求头
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + MOONSHOT_API_KEY);
+        headers.set("Authorization", "Bearer " + moonshotAPI.getAPI_KEY());
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         try {
@@ -106,14 +105,17 @@ public class CvFileService {
 
 
     //TODO 自定义类获取文件ID
-    public static String uploadMSAiFiles(File file) throws JsonProcessingException {
+    public  String uploadMSAiFiles(File file) throws JsonProcessingException {
+
+
         // 创建RestTemplate实例
         RestTemplate restTemplate = new RestTemplate();
+
 
         // 设置请求头
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-        headers.set("Authorization", "Bearer " + MOONSHOT_API_KEY);
+        headers.set("Authorization", "Bearer " + moonshotAPI.getAPI_KEY());
 
         // 创建多部分请求体
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
@@ -124,7 +126,7 @@ public class CvFileService {
         HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(body, headers);
 
         // 发送POST请求
-        String MOONSHOT_FILE_API_BASE_URL = MOONSHOT_API_BASE_URL + "/files";
+        String MOONSHOT_FILE_API_BASE_URL = moonshotAPI.getBASE_URL() + "/files";
         try {
             ResponseEntity<String> response = restTemplate.postForEntity(MOONSHOT_FILE_API_BASE_URL, request, String.class);
             System.out.println("Response status: " + response.getStatusCode());
@@ -145,8 +147,7 @@ public class CvFileService {
             return null;
         }
     }
-    //@Value("${file.upload.path}")
-    private String uploadPath = "E:\\TestUpload";
+
 
     public ResponseEntity<String> uploadfile(@RequestParam("cvfile")  MultipartFile file , HttpServletRequest request) {
         if (file.isEmpty()) {
@@ -156,15 +157,16 @@ public class CvFileService {
         try {
             String fileName = String.format("%06d", new Random().nextInt(900000) + 1) + file.getOriginalFilename();
             // 设置文件存储路径
-            Path path = Paths.get(uploadPath, fileName);
+            Path path = Paths.get(filePath.getUploadPath(), fileName);
             // 保存文件
             Files.copy(file.getInputStream(), path);
-            File upfile = new File("E:\\TestUpload\\" + fileName);
-            CvFileService cvFileService = new CvFileService(new RestTemplateBuilder());
+            //TODO 文件路径改写
+            File upfile = new File(filePath.getUploadPath() + fileName);
+            //CvFileServiceImpl cvFileService = new CvFileServiceImpl();
             // 上传文件至Moonshot
-            String fileId = cvFileService.uploadMSAiFiles(upfile);
+            String fileId = this.uploadMSAiFiles(upfile);
             //抽取文件内容
-            String fileContent = cvFileService.getFileContent(fileId);
+            String fileContent = this.getFileContent(fileId);
             if(null != fileContent){
 /*                ContextRequest contextRequest = new ContextRequest();
                 System.out.println("开始注入session");

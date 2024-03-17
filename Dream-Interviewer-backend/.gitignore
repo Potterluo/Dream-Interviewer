@@ -145,3 +145,6 @@ fabric.properties
 # Android studio 3.1+ serialized cache file
 .idea/caches/build_file_checksums.ser
 
+# 远程配置文件
+!**/src/main/resources/application.yml
+!**/src/main/resources/application-prod.yml

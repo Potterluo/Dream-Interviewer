@@ -36,7 +36,7 @@ export default {
   },
   pre: {
     '/api/': {
-      target: 'your pre url',
+      target: '10.10.10.10:8101/',
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },
