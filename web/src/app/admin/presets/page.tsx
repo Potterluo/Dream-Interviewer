@@ -162,9 +162,14 @@ export default function AdminPresetsPage() {
                   <TableHead className="hidden md:table-cell">类型</TableHead>
                   <TableHead className="hidden md:table-cell">难度</TableHead>
                   <TableHead className="text-right">题量</TableHead>
-                  <TableHead className="hidden lg:table-cell">考察方向</TableHead>
+                  <TableHead className="hidden xl:table-cell">考察方向</TableHead>
                   <TableHead className="hidden sm:table-cell">来源</TableHead>
-                  <TableHead className="w-24 text-right">操作</TableHead>
+                  {/* Sticky: the action buttons must stay reachable. Without
+                      this, a narrow window pushes 操作 past the right edge of
+                      the scroll container and edit/delete look unclickable. */}
+                  <TableHead className="sticky right-0 z-10 w-24 border-l border-border/60 bg-card text-right">
+                    操作
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -192,7 +197,7 @@ export default function AdminPresetsPage() {
                     <TableCell className="text-right text-sm text-muted-foreground">
                       {p.questionCount}
                     </TableCell>
-                    <TableCell className="hidden text-xs text-muted-foreground lg:table-cell">
+                    <TableCell className="hidden text-xs text-muted-foreground xl:table-cell">
                       {p.focusAreas && p.focusAreas.length > 0 ? (
                         // The truncation has to happen on a BLOCK element with its
                         // own max-width. `truncate` on the inline <span> was a
@@ -216,7 +221,7 @@ export default function AdminPresetsPage() {
                         <Badge variant="outline">共享</Badge>
                       )}
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="sticky right-0 z-10 border-l border-border/60 bg-card text-right">
                       {p.builtin ? (
                         <div className="flex justify-end gap-1">
                           <Button

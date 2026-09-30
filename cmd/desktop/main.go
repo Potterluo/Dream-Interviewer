@@ -41,27 +41,50 @@ import (
 )
 
 func main() {
+	// Log to a FILE before anything else: windowsgui builds have no console,
+	// so slog's default stdout writer would discard everything, including the
+	// reason a boot failed. See bootstrap.go.
+	openDesktopLog()
 	config.SetupLogging("info")
 
 	cfg := config.Load()
-	// Desktop data belongs next to the user's other app data, not the
-	// working directory.
-	if dir, err := os.UserConfigDir(); err == nil {
-		cfg.DataDir = filepath.Join(dir, "github.com/Potterluo/dream-interviewer")
+	// Desktop data belongs next to the user's other app data, not the working
+	// directory — but NEVER unconditionally: if the preferred location cannot
+	// be written to, fall back instead of refusing to start, and honour
+	// APP_DATA_DIR as an explicit override. probe with a real file, because a
+	// directory can exist yet reject writes.
+	dir, problems := pickWritableDataDir()
+	if dir == "" {
+		lastDataDirProblems = problems
+		fatalDesktop("找不到可写的数据目录", nil)
+	}
+	cfg.DataDir = dir
+	if len(problems) > 0 {
+		// Not fatal, but worth recording: it explains why the data is not
+		// where the user expects it.
+		slog.Warn("preferred data dirs unusable, using a fallback",
+			"using", dir, "rejected", problems)
+	}
+
+	// WebView2 refuses to start if its profile directory cannot be created, so
+	// create it up front and fail with a readable message rather than a
+	// controller error from deep inside the runtime.
+	webviewDataPath := filepath.Join(cfg.DataDir, "webview2")
+	if err := os.MkdirAll(webviewDataPath, 0o755); err != nil {
+		lastDataDirProblems = problems
+		fatalDesktop("无法创建 WebView2 数据目录 "+webviewDataPath, err)
 	}
 
 	application, err := app.Boot(cfg)
 	if err != nil {
-		slog.Error("boot", "err", err)
-		os.Exit(1)
+		fatalDesktop("打开数据库失败", err)
 	}
 	defer application.Close()
 
 	// Ephemeral loopback listener; the window is pointed at it below.
 	ln, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
-		slog.Error("listen", "err", err)
-		os.Exit(1)
+		fatalDesktop("无法监听本地端口", err)
 	}
 	port := ln.Addr().(*net.TCPAddr).Port
 
@@ -99,10 +122,20 @@ func main() {
 		Windows: &windows.Options{
 			WebviewIsTransparent: false,
 			WindowIsTranslucent:  false,
+			// WebView2 defaults its profile to %APPDATA%\<binary name>, which
+			// is the SECOND hard dependency on a writable %APPDATA% (the first
+			// is the data dir above). Where %APPDATA% is unavailable — roaming
+			// profiles, OneDrive redirection, EDR, an inherited sandbox — the
+			// default path is rejected and Wails exits with a controller
+			// error, which on a windowsgui build is invisible.
+			//
+			// Pointing it inside our own data dir removes that dependency and
+			// keeps every bit of desktop state in one place, so a portable
+			// copy of the exe carries its profile too.
+			WebviewUserDataPath: webviewDataPath,
 		},
 	})
 	if err != nil {
-		slog.Error("desktop exited", "err", err)
-		os.Exit(1)
+		fatalDesktop("桌面窗口退出异常", err)
 	}
 }

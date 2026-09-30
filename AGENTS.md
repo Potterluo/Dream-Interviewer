@@ -171,6 +171,24 @@ scripts/smoke.ps1      end-to-end HTTP smoke test against a live server
     real TCP — WebView2 buffers custom-scheme responses, so do NOT
     "simplify" the desktop shell back to the asset-server fallback.
     Server changes must keep `server.BuildHandler` working.
+9c-bis. **The desktop target must never hard-wire a `%APPDATA%` path, and
+    must never fail silently.** It is built with `-H windowsgui`, so there
+    is NO console and `slog`'s stdout writer goes nowhere — a boot error
+    then looks exactly like "nothing happens when I double-click it".
+    Two things depend on `%APPDATA%` and both must be redirected:
+    (a) the data dir, resolved by `pickWritableDataDir()` in
+    `cmd/desktop/bootstrap.go`, which honours `APP_DATA_DIR`, then tries
+    `%APPDATA%` → `%LOCALAPPDATA%` → `<exe dir>/data`, and PROBES each with
+    a real file (a directory can exist and still reject writes);
+    (b) WebView2's profile, which Wails otherwise defaults to
+    `%APPDATA%\<binary name>` — set `Windows.WebviewUserDataPath` to a
+    subdir of the resolved data dir. If both are left at their defaults the
+    app dies with an opaque SQLite `CANTOPEN`/`readonly` or a WebView2
+    `800700aa` error wherever the profile is unavailable (roaming profile
+    off, OneDrive redirection, EDR, an inherited sandbox). Fatal startup
+    errors go through `fatalDesktop()`, which logs to
+    `dream-interviewer-desktop.log` next to the exe and shows a native
+    message box.
 9d. **Brand icon.** The raster master is `build/appicon.png` (1024×1024);
     `web/src/app/icon.png` (512) is the favicon AND the in-app logo
     (app-shell / login-screen / onboard reference `/icon.png`), and
