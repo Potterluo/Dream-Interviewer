@@ -192,11 +192,17 @@ export default function AdminPresetsPage() {
                     <TableCell className="text-right text-sm text-muted-foreground">
                       {p.questionCount}
                     </TableCell>
-                    <TableCell className="hidden max-w-56 text-xs text-muted-foreground lg:table-cell">
+                    <TableCell className="hidden text-xs text-muted-foreground lg:table-cell">
                       {p.focusAreas && p.focusAreas.length > 0 ? (
-                        <span className="truncate" title={p.focusAreas.join("・")}>
+                        // The truncation has to happen on a BLOCK element with its
+                        // own max-width. `truncate` on the inline <span> was a
+                        // no-op, and `max-w-56` on a <td> is only a hint under
+                        // auto table layout — so a long 考察方向 list spilled out
+                        // of the cell and painted over the 来源 badge and the
+                        // action buttons.
+                        <div className="max-w-56 truncate" title={p.focusAreas.join("・")}>
                           {p.focusAreas.join("・")}
-                        </span>
+                        </div>
                       ) : (
                         "—"
                       )}
