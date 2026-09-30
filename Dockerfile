@@ -1,5 +1,13 @@
 # --- Stage 1: Build web UI (static export) ---------------------------------
-FROM node:22-alpine AS web-builder
+# --platform=$BUILDPLATFORM, NOT the target: this stage only runs tsc/Next and
+# emits platform-independent HTML/JS/CSS, so there is nothing to gain from
+# running it per-architecture. Building it for linux/arm64 means Node runs under
+# qemu emulation, where the Next.js static-page worker dies with
+# "qemu: uncaught target signal 4 (Illegal instruction)" / SIGILL. That failure
+# is invisible while the layer is CACHED and appears the moment web/ changes,
+# which makes it look like a regression in whatever was edited. Building it once
+# on the native builder is both correct and much faster.
+FROM --platform=$BUILDPLATFORM node:22-alpine AS web-builder
 WORKDIR /src/web
 # Pin pnpm so lockfile + build behavior stay reproducible.
 RUN corepack enable && corepack prepare pnpm@10.15.0 --activate
