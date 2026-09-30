@@ -1,0 +1,16 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "github.com/Potterluo/dream-interviewer",
+  "outputfilename": "app-desktop",
+  "info": {
+    "productName": "Dream Interviewer",
+    "productVersion": "0.1.0",
+    "comments": "Go + Next.js full-stack starter, desktop shell"
+  },
+  "frontend:dir": "web",
+  "frontend:install": "",
+  "frontend:build": "",
+  "author": {
+    "name": "github.com/Potterluo/dream-interviewer"
+  }
+}

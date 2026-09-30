@@ -1,0 +1,76 @@
+# CI: lint + test + build on every push/PR. The frontend build runs once
+# and its output is reused by the Go build (actions/cache keyed on the
+# web/ source hash) — no point re-installing pnpm deps per job.
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.25"
+          cache: true
+      - name: Vet
+        run: go vet ./...
+      - name: Test
+        run: go test ./...
+      # `go build ./...` compiles the embed directory too; without a UI
+      # build the empty dist still compiles (the placeholder page covers it).
+      - name: Build (no embedded UI)
+        run: go build ./...
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.15.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm build
+
+  # Full single-binary build with the UI embedded — the artifact a user
+  # actually runs. Kept as a separate job so it fails loudly if the
+  # embed pipeline breaks while both halves still build alone.
+  binary:
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.25"
+          cache: true
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.15.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+      - name: Build web + embed + binary
+        run: |
+          cd web && pnpm install --frozen-lockfile && pnpm build
+          cd ..
+          rm -rf internal/server/dist && cp -r web/out internal/server/dist
+          CGO_ENABLED=0 go build -trimpath -o bin/app ./cmd/server
+      - uses: actions/upload-artifact@v4
+        with:
+          name: app-linux-amd64
+          path: bin/app

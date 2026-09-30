@@ -1,0 +1,42 @@
+# Build artifacts
+#
+# NOTE the leading slashes. A bare `dist/` matches a directory named dist at
+# ANY depth — including internal/server/dist/ — and once git excludes a
+# DIRECTORY it never looks inside it, so the `!.gitkeep` rule below can never
+# take effect. That made a fresh clone unbuildable: no internal/server/dist
+# directory at all, and `//go:embed all:dist` then fails with "no matching
+# files found". Anchoring these to the repo root keeps the embed directory
+# present while still ignoring the other build output.
+/bin/
+/dist/
+/web/out/
+/web/.next/
+internal/server/dist/*
+!internal/server/dist/.gitkeep
+
+# Runtime data
+/data/
+*.db
+*.db-wal
+*.db-shm
+
+# Dependencies
+node_modules/
+
+# Environment / secrets — .env holds real credentials, so it must never be
+# committed. .env.example is the committed template.
+# `.env*` (not just `.env`) because Next.js conventions add .env.production /
+# .env.development / .env.test, and any of them may hold a real value.
+.env*
+!.env.example
+
+# Local run artifacts
+smoke-out.txt
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.shots/
+
+# Wails build output (icons/appicon stay tracked)
+build/bin/

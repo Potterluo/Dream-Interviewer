@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- web-starter brand icon: gradient rounded square + "S" monogram.
+       Gradient matches the app logo (primary → chart-2 in the default
+       violet theme). Source of truth for the web favicon and the
+       desktop app icon (build/appicon.png, build/windows/icon.ico). -->
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7C3AED"/>
+      <stop offset="1" stop-color="#06B6D4"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="29" fill="url(#g)"/>
+  <text x="64" y="93" text-anchor="middle"
+        font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
+        font-size="82" font-weight="800" fill="#ffffff">S</text>
+</svg>

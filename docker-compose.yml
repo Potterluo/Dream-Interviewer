@@ -1,0 +1,49 @@
+# Development helpers. `docker compose up --build app` runs the full
+# single-binary container; `--profile postgres` adds a Postgres and
+# switches the app to it (APP_DB_TYPE/APP_DB_DSN), demonstrating the
+# production storage path.
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      APP_PORT: 8080
+      APP_DATA_DIR: /data
+      # APP_COOKIE_SECURE: "true"    # enable behind HTTPS
+      # APP_RATE_LIMIT_RPM: "120"
+    volumes:
+      - app-data:/data
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:17-alpine
+    profiles: ["postgres"]
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: app
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  app-postgres:
+    build: .
+    profiles: ["postgres"]
+    ports:
+      - "8080:8080"
+    environment:
+      APP_DB_TYPE: postgres
+      APP_DB_DSN: "postgres://app:app@postgres:5432/app?sslmode=disable"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  app-data:
+  pg-data:

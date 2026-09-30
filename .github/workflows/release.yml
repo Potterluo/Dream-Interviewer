@@ -1,0 +1,60 @@
+# Release: on a v* tag, build cross-platform binaries (UI embedded) and
+# attach them to a GitHub Release.
+name: release
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - { goos: linux,   goarch: amd64, ext: ""    }
+          - { goos: linux,   goarch: arm64, ext: ""    }
+          - { goos: darwin,  goarch: amd64, ext: ""    }
+          - { goos: darwin,  goarch: arm64, ext: ""    }
+          - { goos: windows, goarch: amd64, ext: .exe  }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.25"
+          cache: true
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.15.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+      - name: Build embedded frontend
+        run: |
+          cd web && pnpm install --frozen-lockfile && pnpm build
+          cd ..
+          rm -rf internal/server/dist && cp -r web/out internal/server/dist
+      - name: Build binary
+        env:
+          VERSION: ${{ github.ref_name }}
+          COMMIT: ${{ github.sha }}
+        run: |
+          NAME=app_${{ matrix.goos }}_${{ matrix.goarch }}
+          CGO_ENABLED=0 GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} \
+            go build -trimpath \
+            -ldflags "-s -w -X main.version=${VERSION} -X github.com/Potterluo/dream-interviewer/internal/buildinfo.Version=${VERSION}" \
+            -o "dist/${NAME}/app${{ matrix.ext }}" ./cmd/server
+          cd dist
+          if [ "${{ matrix.goos }}" = "windows" ]; then
+            zip -q "${NAME}.zip" -j "${NAME}/app${{ matrix.ext }}"
+          else
+            tar -czf "${NAME}.tar.gz" -C "${NAME}" app
+          fi
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          generate_release_notes: true

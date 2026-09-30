@@ -1,0 +1,23 @@
+.git
+.github
+bin
+dist
+data
+web/node_modules
+web/out
+web/.next
+internal/server/dist/*
+!internal/server/dist/.gitkeep
+*.md
+
+# Secrets. .gitignore already excludes these, but .dockerignore is a SEPARATE
+# file and the Dockerfile does `COPY . .` into the builder stage — without
+# these lines `docker build` uploads the developer's real API key into the
+# build context and leaves it in the builder layer (image cache,
+# `--target go-builder`).
+.env*
+!.env.example
+
+# Local run artifacts
+smoke-out.txt
+.shots/
