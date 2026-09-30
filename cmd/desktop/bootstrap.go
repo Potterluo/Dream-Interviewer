@@ -1,3 +1,5 @@
+//go:build desktop
+
 package main
 
 // Desktop bootstrap: where the data lives, where the log goes, and how a fatal
